@@ -2,24 +2,26 @@ import React from 'react';
 import Board from '../board/board.component';
 
 import {
-  BoardWrapperContainer,
-  BoardHeaderContainer,
-  BoardBodyContainer,
-  MessageContainer,
+  MenuContainer,
   GameContainer,
-  MenuContainer
+  MessageContainer,
+  BoardBodyContainer,
+  BoardHeaderContainer,
+  BoardWrapperContainer,
+  ConnectionStatusContainer
 } from './game.styles';
 
 import CoolButton from '../cool-button/cool-button.component';
 
 import WebSocketService from '../../services/WebSocketService';
 
-class Game extends React.Component {
+class Game extends React.PureComponent {
   currentLevel = 1;
   gameStarted = false;
 
   state = {
     map: [],
+    connectionStatus: 'offline',
     gameOver: false
   };
 
@@ -27,11 +29,17 @@ class Game extends React.Component {
     this.connection = new WebSocketService();
     this.connection.connect();
     this.connection.on('open', this.onOpen);
+    this.connection.on('close', this.onClose);
     this.connection.on('message', this.onMessage);
   };
 
   onOpen = () => {
-    // @todo: add an online status in the header
+    this.connectionTime = new Date();
+    this.setState({ connectionStatus: 'online' });
+  };
+
+  onClose = () => {
+    this.setState({ connectionStatus: 'offline' });
   };
 
   onMessage = message => {
@@ -81,14 +89,14 @@ class Game extends React.Component {
     this.startGame();
   };
 
-  startGame = () => {
-    const levelSelect = document.getElementById('level');
-    let level = this.currentLevel || 1;
+  setLevelAndStartGame = level => {
+    this.currentLevel = level || '1';
+    this.startGame();
+  };
 
-    if (levelSelect) {
-      level = levelSelect.value;
-      this.currentLevel = level;
-    }
+  startGame = () => {
+    let level = this.currentLevel || '1';
+
     this.gameStarted = true;
     this.connection.send(`new ${level}`);
     this.connection.send('map');
@@ -105,37 +113,59 @@ class Game extends React.Component {
   };
 
   render() {
-    const { map, gameOver } = this.state;
+    const { map, gameOver, connectionStatus } = this.state;
     return (
-      <GameContainer>
-        {this.gameStarted ? (
-          <BoardWrapperContainer>
-            <BoardHeaderContainer>
-              <button onClick={this.exitGame}>Main Menu</button>
-              <button onClick={this.restartGame} hidden={!gameOver}>
-                Restart game
-              </button>
-              <MessageContainer hidden={!gameOver}>Game Over!</MessageContainer>
-            </BoardHeaderContainer>
-            <BoardBodyContainer>
-              <Board
-                squares={map}
-                onButtonClick={this.onButtonClick}
-                gameOver={gameOver}
+      <div>
+        <ConnectionStatusContainer
+          title={`You are connected since: ${this.connectionTime}`}
+        >
+          <div className={`status ${connectionStatus}`} />
+          <span>{connectionStatus}</span>
+        </ConnectionStatusContainer>
+        <GameContainer>
+          {this.gameStarted ? (
+            <BoardWrapperContainer>
+              <BoardHeaderContainer>
+                <button onClick={this.exitGame}>Main Menu</button>
+                <button onClick={this.restartGame} hidden={!gameOver}>
+                  Restart game
+                </button>
+                <MessageContainer hidden={!gameOver}>
+                  Game Over!
+                </MessageContainer>
+              </BoardHeaderContainer>
+              <BoardBodyContainer>
+                <Board
+                  squares={map}
+                  onButtonClick={this.onButtonClick}
+                  gameOver={gameOver}
+                />
+              </BoardBodyContainer>
+            </BoardWrapperContainer>
+          ) : (
+            <MenuContainer>
+              <h2>Welcome to this WebSocket powered Minesweeper!</h2>
+              <h2>Pick your level to start</h2>
+              <CoolButton
+                text='Beginner'
+                onButtonClick={this.setLevelAndStartGame.bind(this, '1')}
               />
-            </BoardBodyContainer>
-          </BoardWrapperContainer>
-        ) : (
-          <MenuContainer>
-            <h2>Welcome to this WebSocket powered Minesweeper!</h2>
-            <h2>Pick your level to start</h2>
-            <CoolButton text='Beginner' onButtonClick={this.startGame} />
-            <CoolButton text='Intermediate' onButtonClick={this.startGame} />
-            <CoolButton text='Master' onButtonClick={this.startGame} />
-            <CoolButton text='King' onButtonClick={this.startGame} />
-          </MenuContainer>
-        )}
-      </GameContainer>
+              <CoolButton
+                text='Intermediate'
+                onButtonClick={this.setLevelAndStartGame.bind(this, '2')}
+              />
+              <CoolButton
+                text='Master'
+                onButtonClick={this.setLevelAndStartGame.bind(this, '3')}
+              />
+              <CoolButton
+                text='King'
+                onButtonClick={this.setLevelAndStartGame.bind(this, '4')}
+              />
+            </MenuContainer>
+          )}
+        </GameContainer>
+      </div>
     );
   }
 }

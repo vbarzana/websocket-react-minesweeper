@@ -32,11 +32,11 @@ const getContent = ({ content }) => {
       number === 1
         ? 'blue'
         : number === 2
-        ? 'red'
+        ? '#673AB7'
         : number === 3
         ? 'green'
         : number === 4
-        ? 'orange'
+        ? '#b409b'
         : '#01ab0e';
     return css`
       ${openButtonStyles}

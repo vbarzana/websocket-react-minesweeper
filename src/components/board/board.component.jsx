@@ -3,9 +3,9 @@ import React from 'react';
 import { BoardContainer } from './board.styles';
 import Cell from '../cell/cell.component';
 const CN_EXPLODE = 'explode';
-const EXPLODE_DURATION = 0.5;
+const EXPLODE_DURATION = 1;
 
-class Board extends React.Component {
+class Board extends React.PureComponent {
   onButtonClick = (x, y) => {
     this.props.onButtonClick(`${x} ${y}`);
   };
