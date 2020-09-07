@@ -7,6 +7,8 @@ The WebSocket API from the provider is published, but I can change that if the p
 
 Any reccommendation/suggestion would be appreciated.
 
+Demo running here: https://vbarzana.github.io/websocket-react-minesweeper
+
 Best regards,
 Victor
 
