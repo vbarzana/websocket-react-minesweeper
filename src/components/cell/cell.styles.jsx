@@ -8,6 +8,16 @@ const openButtonStyles = `
   border: 1px solid gray;
 `;
 
+const getExplodeEffect = ({ explodeDuration }) => css`
+  z-index: 999;
+  border: 1px solid gray;
+  box-shadow: 0 0 34px 30px rgb(255 0 0 / 40%), 0 0 34px 40px rgb(255 0 0 / 40%),
+    0 0 34px 60px rgb(255 0 0 / 40%), 0 0 34px 80px rgb(255 0 0 / 40%),
+    0 0 34px 150px rgb(255 0 0 / 40%), 0 0 34px 300px rgb(255 0 0 / 40%),
+    0 0 34px 500px rgb(255 0 0 / 40%), 0 0 34px 900px rgb(255 0 0 / 40%);
+  transition: ${explodeDuration || '0.5'}s ease-in-out;
+`;
+
 const getContent = ({ content }) => {
   const number = parseInt(content, 10);
   if (content === '*') {
@@ -28,16 +38,13 @@ const getContent = ({ content }) => {
         : number === 4
         ? 'orange'
         : '#01ab0e';
-    return (
-      //openButtonStyles +
-      css`
-        ${openButtonStyles}
-        color: ${color};
-        &::after {
-          content: '${content}';
-        }
-      `
-    );
+    return css`
+      ${openButtonStyles}
+      color: ${color};
+      &::after {
+        content: '${content}';
+      }
+    `;
   } else if (number === 0) {
     return css`
       ${openButtonStyles}
@@ -46,24 +53,22 @@ const getContent = ({ content }) => {
   return null;
 };
 
-export const ButtonContainer = styled.button`
+export const CellContainer = styled.button`
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
-  margin: 0.6px;
   padding: 0;
-  display: block;
-  position: relative;
-  width: 1.3em;
-  height: 1.3em;
-  background: #c0c0c0;
-  box-sizing: border-box;
-  border: 1px solid #b3b3b3;
-  flex: 0 0 11.1111111111%;
+  background: #ff4655;
+  border: 1px solid #f3f3f3;
+
   overflow: hidden;
   cursor: pointer;
 
   ${getContent}
+
+  &.explode {
+    ${getExplodeEffect}
+  }
 
   &:active,
   &:focus {

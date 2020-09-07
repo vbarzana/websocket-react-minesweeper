@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { BoardContainer } from './board.styles';
-import Button from '../button/button.component';
+import Cell from '../cell/cell.component';
+const CN_EXPLODE = 'explode';
+const EXPLODE_DURATION = 0.5;
 
 class Board extends React.Component {
   onButtonClick = (x, y) => {
@@ -9,7 +11,7 @@ class Board extends React.Component {
   };
 
   render() {
-    const { squares } = this.props;
+    const { squares, gameOver } = this.props;
     if (!squares || squares.length === 0) {
       return null;
     }
@@ -21,15 +23,30 @@ class Board extends React.Component {
         colSize = columns.length;
       }
       acc = acc.concat(
-        columns.map((cell, j) => (
-          <Button
-            key={`${i}_${j}`}
-            x={j}
-            y={i}
-            content={cell}
-            onButtonClick={this.onButtonClick}
-          />
-        ))
+        columns.map((cell, j) => {
+          const isBomb = cell === '*';
+          if (isBomb) {
+            setTimeout(() => {
+              document
+                .getElementsByName('bomb')
+                .forEach(el => el.classList.remove(CN_EXPLODE));
+            }, EXPLODE_DURATION * 800);
+          }
+
+          return (
+            <Cell
+              key={`${i}_${j}`}
+              x={j}
+              y={i}
+              style={gameOver ? { pointerEvents: 'none' } : {}}
+              explodeDuration={EXPLODE_DURATION}
+              name={isBomb ? 'bomb' : 'cell'}
+              className={isBomb ? CN_EXPLODE : ''}
+              content={cell}
+              onButtonClick={this.onButtonClick}
+            />
+          );
+        })
       );
       return acc;
     }, []);
