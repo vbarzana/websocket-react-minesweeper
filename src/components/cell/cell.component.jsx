@@ -1,17 +1,38 @@
-import React, { memo } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import { CellContainer } from './cell.styles';
 
-const Cell = ({ onButtonClick, x, y, ...props }) => (
-  <CellContainer
-    {...props}
-    onClick={() => {
-      return onButtonClick(x, y);
-    }}
-  />
-);
+class Cell extends React.Component {
+  shouldComponentUpdate = nextProps => {
+    return (
+      this.props.content !== nextProps.content ||
+      this.props.flag !== nextProps.flag
+    );
+  };
+  render() {
+    const { onButtonClick, x, y, flag, ...otherProps } = this.props;
 
-export default memo(
-  Cell,
-  (prevProps, nextProps) => prevProps.content === nextProps.content
-);
+    return (
+      <CellContainer
+        {...otherProps}
+        flag={flag}
+        onClick={() => {
+          if (flag) {
+            return;
+          }
+          return onButtonClick(x, y);
+        }}
+      />
+    );
+  }
+}
+
+Cell.propTypes = {
+  onButtonClick: PropTypes.func,
+  x: PropTypes.number,
+  y: PropTypes.number,
+  flag: PropTypes.bool
+};
+
+export default Cell;

@@ -18,7 +18,14 @@ const getExplodeEffect = ({ explodeDuration }) => css`
   transition: ${explodeDuration || '0.5'}s ease-in-out;
 `;
 
-const getContent = ({ content }) => {
+const getContent = ({ content, flag }) => {
+  if (flag) {
+    return css`
+      &::after {
+        content: '☠️';
+      }
+    `;
+  }
   const number = parseInt(content, 10);
   if (content === '*') {
     return css`
@@ -53,7 +60,7 @@ const getContent = ({ content }) => {
   return null;
 };
 
-export const CellContainer = styled.button`
+export const CellContainer = styled.div`
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;

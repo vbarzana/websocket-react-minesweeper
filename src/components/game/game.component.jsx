@@ -15,14 +15,15 @@ import CoolButton from '../cool-button/cool-button.component';
 
 import WebSocketService from '../../services/WebSocketService';
 
-class Game extends React.PureComponent {
+class Game extends React.Component {
   currentLevel = 1;
   gameStarted = false;
 
   state = {
     map: [],
     connectionStatus: 'offline',
-    gameOver: false
+    gameOver: false,
+    message: ''
   };
 
   componentDidMount = () => {
@@ -54,6 +55,9 @@ class Game extends React.PureComponent {
         if (data.indexOf('You lose') >= 0) {
           console.log('%c Game Over!', 'color: red;');
           this.setState({ gameOver: true });
+        } else if (data.indexOf('You win') >= 0) {
+          console.log('%c You won!', 'color: green;', data);
+          this.setState({ message: data.substr(6) });
         }
         break;
       }
@@ -84,11 +88,6 @@ class Game extends React.PureComponent {
     this.setState({ map: map });
   };
 
-  restartGame = () => {
-    this.setState({ gameOver: false });
-    this.startGame();
-  };
-
   setLevelAndStartGame = level => {
     this.currentLevel = level || '1';
     this.startGame();
@@ -96,6 +95,11 @@ class Game extends React.PureComponent {
 
   startGame = () => {
     let level = this.currentLevel || '1';
+    this.setState({
+      gameOver: false,
+      map: [],
+      message: ''
+    });
 
     this.gameStarted = true;
     this.connection.send(`new ${level}`);
@@ -103,17 +107,20 @@ class Game extends React.PureComponent {
   };
 
   onButtonClick = action => {
+    if (this.state.gameOver) {
+      return;
+    }
     this.connection.send(`open ${action}`);
     this.connection.send('map');
   };
 
   exitGame = () => {
     this.gameStarted = false;
-    this.setState({ map: [] });
+    this.setState({ map: [], gameOver: false });
   };
 
   render() {
-    const { map, gameOver, connectionStatus } = this.state;
+    const { map, gameOver, connectionStatus, message } = this.state;
     return (
       <div>
         <ConnectionStatusContainer
@@ -127,12 +134,13 @@ class Game extends React.PureComponent {
             <BoardWrapperContainer>
               <BoardHeaderContainer>
                 <button onClick={this.exitGame}>Main Menu</button>
-                <button onClick={this.restartGame} hidden={!gameOver}>
+                <button onClick={this.startGame} hidden={!gameOver}>
                   Restart game
                 </button>
-                <MessageContainer hidden={!gameOver}>
+                <MessageContainer hidden={!gameOver} style={{ color: 'red' }}>
                   Game Over!
                 </MessageContainer>
+                <MessageContainer hidden={!message}>{message}</MessageContainer>
               </BoardHeaderContainer>
               <BoardBodyContainer>
                 <Board

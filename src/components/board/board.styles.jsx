@@ -1,18 +1,18 @@
 import styled, { css } from 'styled-components';
 import { CellContainer } from '../cell/cell.styles';
 const getBoardFlexAndSize = ({ rows, columns }) => {
-  let size = rows <= 10 ? '2' : rows <= 20 ? '1.5' : '.8';
+  let size = rows <= 10 ? '2' : rows <= 20 ? '1.5' : '1';
   let tooBigBoardButtonStyles = null;
   if (rows >= 30) {
     tooBigBoardButtonStyles = css`
       &::after {
-        font-size: 11px;
-        top: -3px;
+        font-size: 10px;
+        top: -8px;
         position: relative;
       }
       &[name='bomb']::after {
         font-size: 8px !important;
-        top: -5px !important;
+        top: -8px;
       }
     `;
   } else if (rows >= 20) {

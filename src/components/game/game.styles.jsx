@@ -88,4 +88,5 @@ export const MenuContainer = styled.div`
 export const MessageContainer = styled.span`
   font-size: 1em;
   color: orange;
+  max-width: 250px;
 `;
