@@ -32,6 +32,12 @@ class Game extends React.Component {
     this.connection.on('open', this.onOpen);
     this.connection.on('close', this.onClose);
     this.connection.on('message', this.onMessage);
+    document.onkeypress = evt => {
+      // restart with 'r'
+      if (evt.charCode === 114) {
+        this.startGame();
+      }
+    };
   };
 
   onOpen = () => {
@@ -135,7 +141,7 @@ class Game extends React.Component {
               <BoardHeaderContainer>
                 <button onClick={this.exitGame}>Main Menu</button>
                 <button onClick={this.startGame} hidden={!gameOver}>
-                  Restart game
+                  Restart game (Key: r)
                 </button>
                 <MessageContainer hidden={!gameOver} style={{ color: 'red' }}>
                   Game Over!
