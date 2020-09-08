@@ -32,12 +32,18 @@ class Game extends React.Component {
     this.connection.on('open', this.onOpen);
     this.connection.on('close', this.onClose);
     this.connection.on('message', this.onMessage);
-    document.onkeypress = evt => {
-      // restart with 'r'
-      if (evt.charCode === 114) {
-        this.startGame();
-      }
-    };
+    document.addEventListener('keypress', this.handleKeyPress.bind(this));
+  };
+
+  componentWillUnmount = () => {
+    document.removeEventListener('keypress', this.handleKeyPress.bind(this));
+  };
+
+  handleKeyPress = evt => {
+    // restart with 'r'
+    if (evt.charCode === 114) {
+      this.startGame();
+    }
   };
 
   onOpen = () => {
